@@ -1,29 +1,13 @@
 'use strict'
 
 const https = require('https')
-const path = require('path');
-const data = require('./data.js')
+const path = require('path')
+const keeper = require('./keeper.js')
 const formidable = require('formidable')
 const fs = require('fs')
 
-let me = {}
-let friends = {}
-let photos = normalize(data.photos)
-
 function onError(error) {
     throw new Error(error)
-}
-
-function isEmpty(object) {
-    return !Object.keys(object).length
-}
-
-function normalize(array) {
-    let result = {}
-
-    array.forEach(item => result[item.id] = item)
-
-    return result
 }
 
 function get(path) {
@@ -75,18 +59,18 @@ function savePhoto(req) {
 }
 
 function getPhotos() {
-    return Promise.resolve(data.photos)
+    return Promise.resolve(keeper.get('photos'))
 }
 
 function getMe() {
     return new Promise(function(resolve, reject) {
-        if (!isEmpty(me)) {
-            resolve(me)
+        if (keeper.get('me')) {
+            resolve(keeper.get('me'))
         
         } else {
             get('/api/').then(res => {
-                me = JSON.parse(res)
-                resolve(me)
+                keeper.add('me', JSON.parse(res))
+                resolve(keeper.get('me'))
             })
         }
     })
@@ -94,21 +78,21 @@ function getMe() {
 
 function getFriends() {
     return new Promise(function(resolve, reject) {
-        if (!isEmpty(friends)) {
-            resolve(friends)
+        if (keeper.get('friends')) {
+            resolve(keeper.get('friends'))
         
         } else {
             get('/api/?results=15').then(res => {
-                friends = JSON.parse(res)
-                resolve(friends)
+                keeper.add('friends', JSON.parse(res))
+                resolve(keeper.get('friends'))
             })
         }
     })
 }
 
 module.exports = {
-    getMe,
-    getPhotos,
-    getFriends,
-    savePhoto
+    getMe: getMe,
+    getPhotos: getPhotos,
+    getFriends: getFriends,
+    savePhoto: savePhoto
 }
