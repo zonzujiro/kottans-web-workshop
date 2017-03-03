@@ -1,7 +1,7 @@
 # kottans-web-workshop
 Simple web application for workshop of web course of the kottans
 
-Maded with Node.JS, promises, sockets and love :heart:
+Made with Node.JS, promises, sockets and love :heart:
 
 Server now can cache data received from external API - randomuser, so you can implement deleting and changing of data stored in backend
 
